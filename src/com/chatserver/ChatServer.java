@@ -17,7 +17,7 @@ public class ChatServer {
 	private ServerSocket serverSocket;
 	private int clientCount;
 	private int chatRoomCount;
-	private HashMap<String, ChatRoom> chatrooms = new HashMap<String, ChatRoom>();
+	private HashMap<Integer, ChatRoom> chatrooms = new HashMap<Integer, ChatRoom>();
 	private static final ThreadPoolExecutor executorService = (ThreadPoolExecutor) Executors.newFixedThreadPool(10);
 	
 	//Constructor
@@ -52,10 +52,15 @@ public class ChatServer {
 		}
 		else{
 			ChatRoom chat = new ChatRoom(chatroomName, chatRoomCount);
-			chatrooms.put(chatroomName, chat);
+			chatrooms.put(chat.getRoomRef(), chat);
 			chat.addClient(client);
 			chatRoomCount++;
 		}
+	}
+	
+	public void leaveChatRoom(int chatroomId, int clientId){
+		ChatRoom chatroom = chatrooms.get(chatroomId);
+		chatroom.removeClient(clientId);
 	}
 	
 	//Increment client count

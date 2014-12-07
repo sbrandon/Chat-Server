@@ -34,8 +34,10 @@ public class ChatWorker implements Runnable {
 	}
 	
 	//Leave
-	public void leaveChatroom(){
-		
+	public void leaveChatroom(String chatroomId, String clientId){
+		int chatroom = Integer.parseInt(chatroomId);
+		int client = Integer.parseInt(clientId);
+		server.leaveChatRoom(chatroom, client);
 	}
 	
 	//Chat
@@ -63,10 +65,10 @@ public class ChatWorker implements Runnable {
 				}
 				else if(lines.get(0).startsWith("JOIN_CHATROOM")){
 					if(lines.size() >= 3){
-						String[] line1 = lines.get(0).split(":");
-						String chatroomName = line1[1].substring(1);
-						String[] line4 = lines.get(3).split(":");
-						String clientName = line4[1].substring(1);
+						String[] line0 = lines.get(0).split(":");
+						String chatroomName = line0[1].substring(1);
+						String[] line3 = lines.get(3).split(":");
+						String clientName = line3[1].substring(1);
 						joinChatroom(chatroomName, clientName);
 					}
 					else{
@@ -74,7 +76,11 @@ public class ChatWorker implements Runnable {
 					}
 				}
 				else if(lines.get(0).startsWith("LEAVE_CHATROOM")){
-					
+					String[] line0 = lines.get(0).split(":");
+					String chatroomId = line0[1].substring(1);
+					String[] line1 = lines.get(1).split(":");
+					String joinId = line1[1].substring(1);
+					leaveChatroom(chatroomId, joinId);
 				}
 				else if(lines.get(0).startsWith("CHAT")){
 					

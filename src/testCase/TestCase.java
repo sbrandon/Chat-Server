@@ -25,21 +25,46 @@ public class TestCase {
 	}
 	
 	public void start(){
-		System.out.println("Client is running. Port No. " + portNumber);
-		running = true;
-		testJoin();
+		try
+		{
+			System.out.println("Client is running. Port No. " + portNumber);
+			sendMessage = new DataOutputStream(socket.getOutputStream());
+			running = true;
+			testJoin();
+			testLeave();
+		}
+		catch(Exception e)
+		{
+			running = false;
+			System.out.println("Cannot Connect With Server");
+		}	
 	}
 	
 	public void testJoin(){
 		try
 		{
 			String join = "JOIN_CHATROOM: cats\nCLIENT_IP: 0\nPORT: 0\nCLIENT_NAME: Stephen\n";
-			sendMessage = new DataOutputStream(socket.getOutputStream());
 			sendMessage.writeBytes(join);
 			reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			System.out.println("FROM SERVER: " + reader.readLine());
 			System.out.println("FROM SERVER: " + reader.readLine());
 			System.out.println("FROM SERVER: " + reader.readLine());
+			System.out.println("FROM SERVER: " + reader.readLine());
+			System.out.println("FROM SERVER: " + reader.readLine());
+		}
+		catch(Exception e)
+		{
+			running = false;
+			System.out.println("Cannot Connect With Server");
+		}
+	}
+	
+	public void testLeave(){
+		try
+		{
+			String leave = "LEAVE_CHATROOM: 0\nJOIN_ID: 0\nCLIENT_NAME: Stephen\n";
+			sendMessage.writeBytes(leave);
+			reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			System.out.println("FROM SERVER: " + reader.readLine());
 			System.out.println("FROM SERVER: " + reader.readLine());
 		}

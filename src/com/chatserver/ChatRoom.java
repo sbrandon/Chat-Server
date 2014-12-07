@@ -7,7 +7,7 @@ public class ChatRoom {
 
 	private String name;
 	private int roomRef;
-	private HashMap<String, Client> clients = new HashMap<String, Client>();
+	private HashMap<Integer, Client> clients = new HashMap<Integer, Client>();
 	
 	public ChatRoom(String name, int roomRef){
 		this.name = name;
@@ -16,14 +16,17 @@ public class ChatRoom {
 	
 	//Add a client to the ChatRoom
 	public void addClient(Client client){
-		clients.put(client.getName(), client);
+		clients.put(client.getId(), client);
 		String joined = "JOINED_CHATROOM: " + name + "\nSERVER_IP: " + client.getSocket().getLocalAddress().toString().substring(1) + "\nPORT: " + client.getSocket().getLocalPort() + "\nROOM_REF: " + roomRef + "\nJOIN_ID: " + client.getId() + "\n";
 		sendMessage(joined, client);
 	}
 	
 	//Remove a client from the ChatRoom
-	public void removeClient(String clientName){
-		clients.remove(clientName);
+	public void removeClient(int clientId){
+		Client client = clients.get(clientId);
+		clients.remove(clientId);
+		String left = "LEFT_CHATROOM: " + roomRef + "\nJOIN_ID: " + client.getId() + "\n";
+		sendMessage(left, client);
 	}
 	
 	//Send a message to a client
@@ -46,11 +49,11 @@ public class ChatRoom {
 		this.name = name;
 	}
 
-	public HashMap<String, Client> getClients() {
+	public HashMap<Integer, Client> getClients() {
 		return clients;
 	}
 
-	public void setClients(HashMap<String, Client> clients) {
+	public void setClients(HashMap<Integer, Client> clients) {
 		this.clients = clients;
 	}
 
