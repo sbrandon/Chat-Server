@@ -28,9 +28,11 @@ public class TestCase {
 		try
 		{
 			System.out.println("Client is running. Port No. " + portNumber);
+			System.out.println();
 			sendMessage = new DataOutputStream(socket.getOutputStream());
 			running = true;
 			testJoin();
+			testChat();
 			testLeave();
 		}
 		catch(Exception e)
@@ -46,11 +48,28 @@ public class TestCase {
 			String join = "JOIN_CHATROOM: cats\nCLIENT_IP: 0\nPORT: 0\nCLIENT_NAME: Stephen\n";
 			sendMessage.writeBytes(join);
 			reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			System.out.println("FROM SERVER: " + reader.readLine());
-			System.out.println("FROM SERVER: " + reader.readLine());
-			System.out.println("FROM SERVER: " + reader.readLine());
-			System.out.println("FROM SERVER: " + reader.readLine());
-			System.out.println("FROM SERVER: " + reader.readLine());
+			System.out.println(reader.readLine());
+			System.out.println(reader.readLine());
+			System.out.println(reader.readLine());
+			System.out.println();
+		}
+		catch(Exception e)
+		{
+			running = false;
+			System.out.println("Cannot Connect With Server");
+		}
+	}
+	
+	public void testChat(){
+		try
+		{
+			String leave = "CHAT: 0\nJOIN_ID: 0\nCLIENT_NAME: Stephen\nMESSAGE: this is a test message\n\n";
+			sendMessage.writeBytes(leave);
+			reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			System.out.println(reader.readLine());
+			System.out.println(reader.readLine());
+			System.out.println(reader.readLine());
+			System.out.println();
 		}
 		catch(Exception e)
 		{
@@ -65,8 +84,9 @@ public class TestCase {
 			String leave = "LEAVE_CHATROOM: 0\nJOIN_ID: 0\nCLIENT_NAME: Stephen\n";
 			sendMessage.writeBytes(leave);
 			reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			System.out.println("FROM SERVER: " + reader.readLine());
-			System.out.println("FROM SERVER: " + reader.readLine());
+			System.out.println(reader.readLine());
+			System.out.println(reader.readLine());
+			System.out.println();
 		}
 		catch(Exception e)
 		{

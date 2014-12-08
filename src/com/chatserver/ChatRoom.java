@@ -2,6 +2,8 @@ package com.chatserver;
 
 import java.io.PrintWriter;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map.Entry;
 
 public class ChatRoom {
 
@@ -24,9 +26,22 @@ public class ChatRoom {
 	//Remove a client from the ChatRoom
 	public void removeClient(int clientId){
 		Client client = clients.get(clientId);
-		clients.remove(clientId);
+		//If client does not exist return error
 		String left = "LEFT_CHATROOM: " + roomRef + "\nJOIN_ID: " + client.getId() + "\n";
 		sendMessage(left, client);
+		clients.remove(clientId);
+	}
+	
+	//Chat send a message to all clients subscribed to the ChatRoom
+	public void chat(int clientId, String message){
+		Iterator<Entry<Integer, Client>> iterator = clients.entrySet().iterator();
+		Client sender = clients.get(clientId);
+		String sendString = "CHAT: " + roomRef + "\nCLIENT_NAME: " + sender.getName() + "\nMESSAGE: " + message + "\n";
+		while (iterator.hasNext()){
+			Client recepient = iterator.next().getValue();
+			sendMessage(sendString, recepient);
+			iterator.remove();
+		}
 	}
 	
 	//Send a message to a client

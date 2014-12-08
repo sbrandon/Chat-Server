@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -45,22 +47,43 @@ public class ChatServer {
 	
 	//Add a client to a chatRoom
 	public void joinChatRoom(String chatroomName, Client client){
-		ChatRoom chatRoom = chatrooms.get(chatroomName);
+		ChatRoom chatroom = findChatroomByName(chatroomName);
 		//If the chat room exists add the client to it, else create a new one.
-		if(chatRoom != null){
-			chatRoom.addClient(client);
+		if(chatroom != null){
+			chatroom.addClient(client);
 		}
 		else{
-			ChatRoom chat = new ChatRoom(chatroomName, chatRoomCount);
-			chatrooms.put(chat.getRoomRef(), chat);
-			chat.addClient(client);
+			chatroom = new ChatRoom(chatroomName, chatRoomCount);
+			chatroom.addClient(client);
+			chatrooms.put(chatroom.getRoomRef(), chatroom);
 			chatRoomCount++;
 		}
 	}
 	
+	//Find chatroom by name
+	public ChatRoom findChatroomByName(String name){
+		Iterator<Entry<Integer, ChatRoom>> iterator = chatrooms.entrySet().iterator();
+		while (iterator.hasNext()){
+			ChatRoom chatroom = iterator.next().getValue();
+			if(chatroom.getName().equals(name)){
+				return chatroom;
+			}
+			iterator.remove();
+		}
+		return null;
+	}
+	
+	//Remove a client from a chatRoom
 	public void leaveChatRoom(int chatroomId, int clientId){
 		ChatRoom chatroom = chatrooms.get(chatroomId);
-		chatroom.removeClient(clientId);
+		System.out.println(chatroom.getClients().get(0).getName());
+		//chatroom.removeClient(clientId);
+	}
+	
+	//Send message to a chatRoom
+	public void chat(int chatroomId, int clientId, String message){
+		ChatRoom chatroom = chatrooms.get(chatroomId);
+		chatroom.chat(clientId, message);
 	}
 	
 	//Increment client count
@@ -77,6 +100,11 @@ public class ChatServer {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public ChatRoom getChatRoom(int chatRoomId){
+		chatrooms.get(chatRoomId);
+		return null;
 	}
 	
 	//Main method

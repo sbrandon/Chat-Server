@@ -41,8 +41,10 @@ public class ChatWorker implements Runnable {
 	}
 	
 	//Chat
-	public void Chat(){
-		
+	public void chat(String chatroomId, String clientId, String message){
+		int chatroom = Integer.parseInt(chatroomId);
+		int client = Integer.parseInt(clientId);
+		server.chat(chatroom, client, message);
 	}
 	
 	public String heloResponse(String command){
@@ -61,7 +63,7 @@ public class ChatWorker implements Runnable {
 					lines.add(reader.readLine());
 				}
 				if(lines.isEmpty()){
-					//return error
+					//Do nothing
 				}
 				else if(lines.get(0).startsWith("JOIN_CHATROOM")){
 					if(lines.size() >= 3){
@@ -83,7 +85,13 @@ public class ChatWorker implements Runnable {
 					leaveChatroom(chatroomId, joinId);
 				}
 				else if(lines.get(0).startsWith("CHAT")){
-					
+					String[] line0 = lines.get(0).split(":");
+					String chatroomId = line0[1].substring(1);
+					String[] line1 = lines.get(1).split(":");
+					String joinId = line1[1].substring(1);
+					String[] line3 = lines.get(3).split(":");
+					String message = line3[1].substring(1);
+					chat(chatroomId, joinId, message);
 				}
 				else if(lines.get(0).startsWith("HELO")){
 					writer.println(heloResponse(lines.get(0)));			
