@@ -68,7 +68,6 @@ public class ChatServer {
 			if(chatroom.getName().equals(name)){
 				return chatroom;
 			}
-			iterator.remove();
 		}
 		return null;
 	}
@@ -76,14 +75,17 @@ public class ChatServer {
 	//Remove a client from a chatRoom
 	public void leaveChatRoom(int chatroomId, int clientId){
 		ChatRoom chatroom = chatrooms.get(chatroomId);
-		System.out.println(chatroom.getClients().get(0).getName());
-		//chatroom.removeClient(clientId);
+		chatroom.removeClient(clientId);
 	}
 	
 	//Send message to a chatRoom
-	public void chat(int chatroomId, int clientId, String message){
+	public boolean chat(int chatroomId, int clientId, String message){
 		ChatRoom chatroom = chatrooms.get(chatroomId);
-		chatroom.chat(clientId, message);
+		if(chatroom != null){
+			chatroom.chat(clientId, message);
+			return true;
+		}
+		return false;
 	}
 	
 	//Increment client count

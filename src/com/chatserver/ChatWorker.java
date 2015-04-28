@@ -44,11 +44,31 @@ public class ChatWorker implements Runnable {
 	public void chat(String chatroomId, String clientId, String message){
 		int chatroom = Integer.parseInt(chatroomId);
 		int client = Integer.parseInt(clientId);
-		server.chat(chatroom, client, message);
+		if(!server.chat(chatroom, client, message)){
+			error(1);
+		}
 	}
 	
 	public String heloResponse(String command){
 		return command + "\nIP:" + socket.getLocalAddress().toString().substring(1) + "\nPort:" + socket.getLocalPort() + "\nStudentID:14303108\n";  
+	}
+	
+	//Send an error message back to the client
+	public void error(int error){
+		try {
+			PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
+			String errorMessage = "ERROR_CODE: " + error + "\nERROR_DESCRIPTION: ";
+			String description = "";
+			if(error == 0){
+				description = "Incorrect Format, Not enough lines\n";
+			}
+			else if(error == 1){
+				description = "Chatroom does not exist\n";
+			}
+			writer.println(errorMessage + description);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	@Override
@@ -61,21 +81,17 @@ public class ChatWorker implements Runnable {
 				lines = new ArrayList<String>();
 				while(reader.ready()){
 					lines.add(reader.readLine());
+					System.out.println("Received: " + lines.get(0));
 				}
 				if(lines.isEmpty()){
 					//Do nothing
 				}
 				else if(lines.get(0).startsWith("JOIN_CHATROOM")){
-					if(lines.size() >= 3){
-						String[] line0 = lines.get(0).split(":");
-						String chatroomName = line0[1].substring(1);
-						String[] line3 = lines.get(3).split(":");
-						String clientName = line3[1].substring(1);
-						joinChatroom(chatroomName, clientName);
-					}
-					else{
-						//return error
-					}
+					String[] line0 = lines.get(0).split(":");
+					String chatroomName = line0[1];
+					String[] line3 = lines.get(3).split(":");
+					String clientName = line3[1];
+					joinChatroom(chatroomName, clientName);
 				}
 				else if(lines.get(0).startsWith("LEAVE_CHATROOM")){
 					String[] line0 = lines.get(0).split(":");

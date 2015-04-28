@@ -21,26 +21,36 @@ public class ChatRoom {
 		clients.put(client.getId(), client);
 		String joined = "JOINED_CHATROOM: " + name + "\nSERVER_IP: " + client.getSocket().getLocalAddress().toString().substring(1) + "\nPORT: " + client.getSocket().getLocalPort() + "\nROOM_REF: " + roomRef + "\nJOIN_ID: " + client.getId() + "\n";
 		sendMessage(joined, client);
+		//Inform other clients of new client arrival.
+		chat(client.getId(), client.getName() + " has joined the chatroom.");
 	}
 	
 	//Remove a client from the ChatRoom
 	public void removeClient(int clientId){
 		Client client = clients.get(clientId);
-		//If client does not exist return error
-		String left = "LEFT_CHATROOM: " + roomRef + "\nJOIN_ID: " + client.getId() + "\n";
-		sendMessage(left, client);
-		clients.remove(clientId);
+		if(client != null){
+			String left = "LEFT_CHATROOM: " + roomRef + "\nJOIN_ID: " + client.getId() + "\n";
+			sendMessage(left, client);
+			clients.remove(clientId);
+		}
+		else{
+			//TODO Send error
+		}
 	}
 	
 	//Chat send a message to all clients subscribed to the ChatRoom
 	public void chat(int clientId, String message){
 		Iterator<Entry<Integer, Client>> iterator = clients.entrySet().iterator();
 		Client sender = clients.get(clientId);
-		String sendString = "CHAT: " + roomRef + "\nCLIENT_NAME: " + sender.getName() + "\nMESSAGE: " + message + "\n";
-		while (iterator.hasNext()){
-			Client recepient = iterator.next().getValue();
-			sendMessage(sendString, recepient);
-			iterator.remove();
+		if(sender != null){
+			String sendString = "CHAT: " + roomRef + "\nCLIENT_NAME: " + sender.getName() + "\nMESSAGE: " + message + "\n";
+			while (iterator.hasNext()){
+				Client recepient = iterator.next().getValue();
+				sendMessage(sendString, recepient);
+			}
+		}
+		else{
+			//TODO Send error
 		}
 	}
 	
@@ -48,6 +58,7 @@ public class ChatRoom {
 	public void sendMessage(String message, Client client){
 		try{
 			PrintWriter writer = new PrintWriter(client.getSocket().getOutputStream(), true);
+			System.out.println(message);
 			writer.println(message);
 		}
 		catch(Exception e ){
